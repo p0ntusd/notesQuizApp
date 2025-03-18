@@ -1,27 +1,78 @@
+/**
+ * A note quiz application to assist the user
+ * in learning to read sheet music.
+ *
+ * It uses the model, view, controller
+ * design pattern, and this MainActivity class
+ * is the view.
+ *
+ * @author  Pontus Dahlkvist
+ * @date    18/03 -25
+ */
+
 package com.example.mobilou3
 
+/**
+ * -------------------- Imports --------------------
+ */
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
+/**
+ * -------------------- Class MainActivity --------------------
+ */
 class MainActivity : AppCompatActivity() {
 
-    //ATTRIBUT
+    private lateinit var settingsButton: Button
+    private lateinit var statsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        //KOD
+        initButtons()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    /**
+     * Initializes the settingsButton and
+     * sets an actionlistener.
+     */
+    private fun initSettingsButton() {
+        settingsButton = findViewById(R.id.settingsButton)
+        settingsButton.setOnClickListener{
+            //open settings
+        }
+    }
+
+    /**
+     * Initializes the statsButton and
+     * sets an actionListener.
+     */
+    private fun initStatsButton() {
+        statsButton = findViewById(R.id.statsButton)
+        statsButton.setOnClickListener{
+            //open stats
+        }
+    }
+
+    /**
+     * Initializes the stats and settings
+     * buttons.
+     */
+    private fun initButtons() {
+        initSettingsButton()
+        initStatsButton()
     }
 
     /**

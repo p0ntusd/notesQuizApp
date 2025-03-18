@@ -1,19 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#586D6B"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <!-- Piano Layout -->
+    <LinearLayout
+        android:id="@+id/pianoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="350dp"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/statsButton">
+
+        <!-- Vita tangenter -->
+
+        <Button
+            android:id="@+id/c"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@android:color/black"
+            android:text="C" />
+
+        <Button
+            android:id="@+id/d"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@android:color/black"
+            android:text="D" />
+
+        <Button
+            android:id="@+id/e"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@android:color/white"
+            android:text="E"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/f"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@android:color/black"
+            android:text="F"/>
+
+        <Button
+            android:id="@+id/g"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@android:color/white"
+            android:text="G"
+            android:textColor="@android:color/black" />
+
+        <Button android:id="@+id/a"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@android:color/black"
+            android:text="A"/>
+        <Button android:id="@+id/b"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@android:color/black"
+            android:text="B"/>
+    </LinearLayout>
+
+    <!-- Stats Knapp -->
+    <Button
+        android:id="@+id/statsButton"
+        android:layout_width="155dp"
+        android:layout_height="64dp"
+        android:backgroundTint="#2C3333"
+        android:text="Stats"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.124"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.961" />
+
+    <!-- Settings Knapp -->
+    <Button
+        android:id="@+id/settingsButton"
+        android:layout_width="155dp"
+        android:layout_height="64dp"
+        android:backgroundTint="#2C3333"
+        android:text="Settings"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.863"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.962" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
