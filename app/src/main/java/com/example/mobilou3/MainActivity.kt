@@ -15,6 +15,7 @@ package com.example.mobilou3
 /**
  * -------------------- Imports --------------------
  */
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -29,19 +30,43 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var settingsButton: Button
     private lateinit var statsButton: Button
+    private lateinit var keys: ArrayList<Button>
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
         initButtons()
+        initKeys()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    /**
+     * Initializes the arraylist of all keys.
+     * keys[0] will contain the C-key, keys[1]
+     * the C#-key, and so on, going from left to
+     * right.
+     */
+    private fun initKeys() {
+        keys.add(findViewById(R.id.cButton))
+        keys.add(findViewById(R.id.cSharpButton))
+        keys.add(findViewById(R.id.dButton))
+        keys.add(findViewById(R.id.dSharpButton))
+        keys.add(findViewById(R.id.eButton))
+        keys.add(findViewById(R.id.fButton))
+        keys.add(findViewById(R.id.fSharpButton))
+        keys.add(findViewById(R.id.gButton))
+        keys.add(findViewById(R.id.gSharpButton))
+        keys.add(findViewById(R.id.aButton))
+        keys.add(findViewById(R.id.aSharpButton))
+        keys.add(findViewById(R.id.bButton))
     }
 
     /**
