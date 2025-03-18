@@ -1,5 +1,4 @@
-package com.example.mobilou3;
+package com.example.mobilou3
 
-public class Model {
-
+class Model {
 }

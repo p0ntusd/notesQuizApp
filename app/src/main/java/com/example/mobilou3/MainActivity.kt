@@ -22,12 +22,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.mobou3.ControllerSingleton
 
 /**
  * -------------------- Class MainActivity --------------------
  */
 class MainActivity : AppCompatActivity() {
 
+    private val controller: Controller = ControllerSingleton.controller
     private lateinit var settingsButton: Button
     private lateinit var statsButton: Button
     private lateinit var keys: ArrayList<Button>
@@ -45,6 +47,18 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+    }
+
+    /**
+     * Sets actionListeners to all the keys.
+     * 'i' is the key that is pressed.
+     */
+    private fun setKeysActionListeners() {
+        for (i in 0 until 11) {
+            keys[i].setOnClickListener {
+                controller.keyPressed(i)
+            }
         }
     }
 
