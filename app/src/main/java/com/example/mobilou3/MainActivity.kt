@@ -18,6 +18,7 @@ package com.example.mobilou3
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -33,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingsButton: Button
     private lateinit var statsButton: Button
     private lateinit var keys: ArrayList<Button>
+    private lateinit var notesImages: HashMap<String, Int>
+    private var currentNoteImage: Int = R.drawable.c4treble
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,12 +45,67 @@ class MainActivity : AppCompatActivity() {
 
         initButtons()
         initKeys()
+        setKeysActionListeners()
+        initNotesImages()
+
+        controller.addView(this)
+        controller.initModel()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    fun displayNote(key: String) {
+        currentNoteImage = notesImages[key]!!
+    }
+
+
+
+    /**
+     * Adds all the images of different notes to an arraylist.
+     * Starts with c2 bass image, and goes up from the with the
+     * white bass keys until e4, then starts a4 at treble clef and
+     * goes trough all white keys up to c6.
+     */
+    private fun initNotesImages() {
+        notesImages = hashMapOf(
+            "C2_Bass" to R.drawable.c2bass,
+            "D2_Bass" to R.drawable.d2bass,
+            "E2_Bass" to R.drawable.e2bass,
+            "F2_Bass" to R.drawable.f2bass,
+            "G2_Bass" to R.drawable.g2bass,
+            "A3_Bass" to R.drawable.a3bass,
+            "B3_Bass" to R.drawable.b3bass,
+            "C3_Bass" to R.drawable.c3bass,
+            "D3_Bass" to R.drawable.d3bass,
+            "E3_Bass" to R.drawable.e3bass,
+            "F3_Bass" to R.drawable.f3bass,
+            "G3_Bass" to R.drawable.g3bass,
+            "A4_Bass" to R.drawable.a4bass,
+            "B4_Bass" to R.drawable.b4bass,
+            "C4_Bass" to R.drawable.c4bass,
+            "D4_Bass" to R.drawable.d4bass,
+            "E4_Bass" to R.drawable.e4base,
+            "A4_Treble" to R.drawable.a4trebble,
+            "C4_Treble" to R.drawable.c4treble,
+            "D4_Treble" to R.drawable.d4treble,
+            "E4_Treble" to R.drawable.e4treble,
+            "F4_Treble" to R.drawable.f4treble,
+            "G4_Treble" to R.drawable.g4treble,
+            "A5_Treble" to R.drawable.a5treble,
+            "B5_Treble" to R.drawable.b5treble,
+            "C5_Treble" to R.drawable.c5treble,
+            "D5_Treble" to R.drawable.d5treble,
+            "E5_Treble" to R.drawable.e5treble,
+            "F5_Treble" to R.drawable.f5treble,
+            "G5_Treble" to R.drawable.g5treble,
+            "A6_Treble" to R.drawable.a6treble,
+            "B6_Treble" to R.drawable.b6treble,
+            "C6_Treble" to R.drawable.c6treble
+        )
     }
 
     /**

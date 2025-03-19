@@ -15,6 +15,36 @@ class Controller {
      * 0 = C, 1 = C#, 2 = D and so on.
      */
     fun keyPressed(i: Int) {
+        model.keyPressed(i)
 
+
+    }
+
+    fun nextNote() {
+        view.displayNote(model.getRandomNoteImage())
+    }
+
+    /**
+     * Adds the view to the controller
+     * to allow for communication.
+     *
+     * @param mainActivity  The view.
+     */
+    fun addView(mainActivity: MainActivity) {
+        this.view = mainActivity
+    }
+
+    fun initModel() {
+        model = Model(this)
+    }
+
+    fun answeredCorrect() {
+        view.updateCorrectText()
+        nextNote()
+    }
+
+    fun answeredWrong() {
+        view.updateWrongText()
+        nextNote()
     }
 }
