@@ -10,6 +10,9 @@ class Model(private var controller: Controller) : Parcelable {
     private var correctAnswers: Int = 0
     private var wrongAnswers: Int = 0
 
+    init {
+        initNotesImages()
+    }
 
     fun getRandomNoteImage(): String {
         currentNote = notesImages.keys.random()
@@ -20,10 +23,10 @@ class Model(private var controller: Controller) : Parcelable {
     fun keyPressed(i: Int) {
         if (i == translateNoteToKey(currentNote)) {
             correctAnswers++
-            controller.answeredCorrect()
+            controller.answeredCorrect(correctAnswers)
         } else {
             wrongAnswers++
-            controller.answeredWrong()
+            controller.answeredWrong(wrongAnswers)
         }
     }
 
@@ -99,7 +102,7 @@ class Model(private var controller: Controller) : Parcelable {
     }
 
     constructor(parcel: Parcel) : this(Controller()) {
-        initNotesImages()
+
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

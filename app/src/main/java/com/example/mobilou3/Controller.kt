@@ -1,7 +1,22 @@
+/**
+ * This is the controller module for the
+ * sheet music quiz application. It acts
+ * as a middle man between the view and the model.
+ *
+ * @author  Pontus Dahlkvist
+ * @date    19/03 -25
+ */
+
 package com.example.mobilou3
 
+/**
+ * -------------------- Imports --------------------
+ */
 import android.widget.Button
 
+/**
+ * -------------------- Class Controller --------------------
+ */
 class Controller {
 
     private lateinit var keys: ArrayList<Button>
@@ -20,6 +35,11 @@ class Controller {
 
     }
 
+    /**
+     * Is called after the user has made a guess.
+     * Will change the displayed note into a new one
+     * and let the user guess again.
+      */
     fun nextNote() {
         view.displayNote(model.getRandomNoteImage())
     }
@@ -34,17 +54,33 @@ class Controller {
         this.view = mainActivity
     }
 
+    /**
+     * Initializes the model. Adds this controller
+     * to that model.
+     */
     fun initModel() {
         model = Model(this)
     }
 
-    fun answeredCorrect() {
-        view.updateCorrectText()
+    /**
+     * Is called when the user makes a correct guess.
+     * Updates the views correct number.
+     *
+     * @param correctNumber The number of correct answers.
+     */
+    fun answeredCorrect(correctNumber: Int) {
+        view.updateCorrectText(correctNumber)
         nextNote()
     }
 
-    fun answeredWrong() {
-        view.updateWrongText()
+    /**
+     * Is called when the user makes an incorrect guess.
+     * Updates the views incorrect number.
+     *
+     * @param wrongAnswers  The number of incorrect guesses.
+     */
+    fun answeredWrong(wrongAnswers: Int) {
+        view.updateWrongText(wrongAnswers)
         nextNote()
     }
 }

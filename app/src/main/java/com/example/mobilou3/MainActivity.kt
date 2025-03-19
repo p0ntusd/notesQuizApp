@@ -19,6 +19,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -35,7 +36,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statsButton: Button
     private lateinit var keys: ArrayList<Button>
     private lateinit var notesImages: HashMap<String, Int>
-    private var currentNoteImage: Int = R.drawable.c4treble
+    private lateinit var currentNoteImageView: ImageView
+    private lateinit var correctText: TextView
+    private lateinit var wrongText: TextView
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        currentNoteImageView = findViewById(R.id.currentNodeImage)
+        initTextViews()
         initButtons()
         initKeys()
         setKeysActionListeners()
@@ -58,11 +63,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Updates the displayed note picture.
+     *
+     * @param key   The key to the hashmap of note pictures.
+     */
     fun displayNote(key: String) {
-        currentNoteImage = notesImages[key]!!
+        val image = notesImages[key]!!
+        currentNoteImageView.setImageResource(image)
     }
 
-
+    /**
+     * Initializes the textViews.
+     */
+    private fun initTextViews() {
+        correctText = findViewById(R.id.incorrectText)
+        wrongText  = findViewById(R.id.correctText)
+    }
 
     /**
      * Adds all the images of different notes to an arraylist.
@@ -127,6 +144,7 @@ class MainActivity : AppCompatActivity() {
      * right.
      */
     private fun initKeys() {
+        keys = ArrayList()
         keys.add(findViewById(R.id.cButton))
         keys.add(findViewById(R.id.cSharpButton))
         keys.add(findViewById(R.id.dButton))
@@ -203,6 +221,14 @@ class MainActivity : AppCompatActivity() {
     @Override
     override fun onResume() {
         super.onResume()
+    }
+
+    fun updateCorrectText(correctNumber: Int) {
+        correctText.setText("Correct: " + correctNumber)
+    }
+
+    fun updateWrongText(wrongAnswers: Int) {
+        wrongText.setText("Incorrect: " + wrongAnswers)
     }
 
 
