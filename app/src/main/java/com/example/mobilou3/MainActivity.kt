@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var currentNoteImageView: ImageView
     private lateinit var correctText: TextView
     private lateinit var wrongText: TextView
+    private lateinit var streakText: TextView
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,8 +78,9 @@ class MainActivity : AppCompatActivity() {
      * Initializes the textViews.
      */
     private fun initTextViews() {
-        correctText = findViewById(R.id.incorrectText)
-        wrongText  = findViewById(R.id.correctText)
+        correctText = findViewById(R.id.correctText)
+        wrongText  = findViewById(R.id.incorrectText)
+        streakText = findViewById(R.id.streakText)
     }
 
     /**
@@ -130,7 +132,7 @@ class MainActivity : AppCompatActivity() {
      * 'i' is the key that is pressed.
      */
     private fun setKeysActionListeners() {
-        for (i in 0 until 11) {
+        for (i in 0 until 12) {
             keys[i].setOnClickListener {
                 controller.keyPressed(i)
             }
@@ -229,6 +231,10 @@ class MainActivity : AppCompatActivity() {
 
     fun updateWrongText(wrongAnswers: Int) {
         wrongText.setText("Incorrect: " + wrongAnswers)
+    }
+
+    fun updateStreakText(currentStreak: Int) {
+        streakText.setText("Streak: " + currentStreak)
     }
 
 

@@ -9,9 +9,14 @@ class Model(private var controller: Controller) : Parcelable {
     private var currentNote: String = "C4_Treble"
     private var correctAnswers: Int = 0
     private var wrongAnswers: Int = 0
+    private var currentStreak: Int = 0
 
     init {
         initNotesImages()
+    }
+
+    fun getCurrentStreak(): Int {
+        return currentStreak
     }
 
     fun getRandomNoteImage(): String {
@@ -23,9 +28,11 @@ class Model(private var controller: Controller) : Parcelable {
     fun keyPressed(i: Int) {
         if (i == translateNoteToKey(currentNote)) {
             correctAnswers++
+            currentStreak++
             controller.answeredCorrect(correctAnswers)
         } else {
             wrongAnswers++
+            currentStreak = 0
             controller.answeredWrong(wrongAnswers)
         }
     }

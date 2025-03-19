@@ -70,6 +70,7 @@ class Controller {
      */
     fun answeredCorrect(correctNumber: Int) {
         view.updateCorrectText(correctNumber)
+        view.updateStreakText(model.getCurrentStreak())
         nextNote()
     }
 
@@ -81,6 +82,7 @@ class Controller {
      */
     fun answeredWrong(wrongAnswers: Int) {
         view.updateWrongText(wrongAnswers)
+        view.updateStreakText(model.getCurrentStreak())
         nextNote()
     }
 }
