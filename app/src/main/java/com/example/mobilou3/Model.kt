@@ -1,7 +1,9 @@
 package com.example.mobilou3
 
+import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 
 class Model(private var controller: Controller) : Parcelable {
 
@@ -10,6 +12,8 @@ class Model(private var controller: Controller) : Parcelable {
     private var correctAnswers: Int = 0
     private var wrongAnswers: Int = 0
     private var currentStreak: Int = 0
+    private var trebleClefOnly: Boolean = false
+    private var clefMode: String = "Both"
 
     init {
         initNotesImages()
@@ -19,11 +23,45 @@ class Model(private var controller: Controller) : Parcelable {
         return currentStreak
     }
 
-    fun getRandomNoteImage(): String {
-        currentNote = notesImages.keys.random()
+    fun setClefMode(mode: String) {
+        clefMode = mode
+    }
 
+    fun getRandomNoteImage(): String {
+        val filteredNotes = when (clefMode) {
+            "Treble" -> notesImages.keys.filter { it.contains("Treble") }
+            "Bass" -> notesImages.keys.filter { it.contains("Bass") }
+            else -> notesImages.keys.toList()
+        }
+        currentNote = filteredNotes.random()
         return currentNote
     }
+
+    fun getCorrectAnswers(): Int {
+        return correctAnswers
+    }
+
+    fun setCorrectAnswers(value: Int) {
+        Log.d("GameState", "setCorrectAnswers() called with value: $value")
+        correctAnswers = value
+    }
+
+    fun getWrongAnswers():Int {
+        return wrongAnswers
+    }
+
+    fun setWrongAnswers(value: Int) {
+        wrongAnswers = value
+    }
+
+    fun getCurrentNote(): String {
+        Log.d("GameState", "getCorrectAnswers() returning: $correctAnswers")
+        return currentNote
+    }
+    fun setCurrentNote(note: String) {
+        currentNote = note
+    }
+
 
     fun keyPressed(i: Int) {
         if (i == translateNoteToKey(currentNote)) {
@@ -118,6 +156,14 @@ class Model(private var controller: Controller) : Parcelable {
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    fun setCurrentStreak(value: Int) {
+        currentStreak = value
+    }
+
+    fun setTrebleClefOnly(enabled: Boolean) {
+        trebleClefOnly = enabled
     }
 
     companion object CREATOR : Parcelable.Creator<Model> {

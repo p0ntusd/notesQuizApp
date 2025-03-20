@@ -16,7 +16,9 @@ package com.example.mobilou3
  * -------------------- Imports --------------------
  */
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -57,10 +59,27 @@ class MainActivity : AppCompatActivity() {
         controller.addView(this)
         controller.initModel()
 
+        loadGameState()
+        loadSettings()
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+    }
+
+    private fun loadSettings() {
+        val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
+        val isTrebleClefOnly = prefs.getBoolean("trebleClefOnly", false)
+        val isBassClefOnly = prefs.getBoolean("bassClefOnly", false)
+
+        if (isTrebleClefOnly) {
+            controller.setClefMode("Treble")
+        } else if (isBassClefOnly) {
+            controller.setClefMode("Bass")
+        } else {
+            controller.setClefMode("Both")
         }
     }
 
@@ -168,7 +187,8 @@ class MainActivity : AppCompatActivity() {
     private fun initSettingsButton() {
         settingsButton = findViewById(R.id.settingsButton)
         settingsButton.setOnClickListener{
-            //open settings
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -201,7 +221,10 @@ class MainActivity : AppCompatActivity() {
     @Override
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
+        outState.putInt("correctAnswers", controller.getCorrectAnswers())
+        outState.putInt("wrongAnswers", controller.getWrongAnswers())
+        outState.putInt("currentStreak", controller.getCurrentStreak())
+        outState.putString("currentNote", controller.getCurrentNote())
     }
 
     /**
@@ -211,7 +234,15 @@ class MainActivity : AppCompatActivity() {
     @Override
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-
+        controller.setCorrectAnswers(savedInstanceState.getInt("correctAnswers"))
+        controller.setWrongAnswers(savedInstanceState.getInt("wrongAnswers"))
+        controller.setCurrentStreak(savedInstanceState.getInt("currentStreak"))
+        val savedNote: String? = savedInstanceState.getString("currentNote")
+        if (savedNote != null) {
+            controller.setCurrentNote(savedNote)
+        } else {
+            controller.setCurrentNote("C4_Treble")
+        }
     }
 
     /**
@@ -223,6 +254,39 @@ class MainActivity : AppCompatActivity() {
     @Override
     override fun onResume() {
         super.onResume()
+        loadGameState()
+    }
+
+    private fun saveGameState() {
+        val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putInt("correctAnswers", controller.getCorrectAnswers())
+        editor.putInt("wrongAnswers", controller.getWrongAnswers())
+        editor.putInt("currentStreak", controller.getCurrentStreak())
+        editor.putString("currentNote", controller.getCurrentNote())
+        editor.apply()
+
+        Log.d("GameState", "Game state saved: Correct=${controller.getCorrectAnswers()}, Wrong=${controller.getWrongAnswers()}, Streak=${controller.getCurrentStreak()}, Note=${controller.getCurrentNote()}")
+    }
+
+    private fun loadGameState() {
+        val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
+        controller.setCorrectAnswers(prefs.getInt("correctAnswers", 0))
+        controller.setWrongAnswers(prefs.getInt("wrongAnswers", 0))
+        controller.setCurrentStreak(prefs.getInt("currentStreak", 0))
+        controller.updateViewTexts()
+
+        val savedNote: String? = prefs.getString("currentNote", "C4_Treble")
+        if (savedNote != null) {
+            controller.setCurrentNote(savedNote)
+        } else {
+            controller.setCurrentNote("C4_Treble")
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveGameState()
     }
 
     fun updateCorrectText(correctNumber: Int) {
@@ -236,6 +300,4 @@ class MainActivity : AppCompatActivity() {
     fun updateStreakText(currentStreak: Int) {
         streakText.setText("Streak: " + currentStreak)
     }
-
-
 }

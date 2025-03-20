@@ -39,7 +39,7 @@ class Controller {
      * Is called after the user has made a guess.
      * Will change the displayed note into a new one
      * and let the user guess again.
-      */
+     */
     fun nextNote() {
         view.displayNote(model.getRandomNoteImage())
     }
@@ -85,4 +85,45 @@ class Controller {
         view.updateStreakText(model.getCurrentStreak())
         nextNote()
     }
+
+    fun getCorrectAnswers(): Int {
+        return model.getCorrectAnswers()
+    }
+
+    fun setCorrectAnswers(value: Int) {
+        model.setCorrectAnswers(value)
+    }
+
+    fun getWrongAnswers(): Int {
+        return model.getWrongAnswers()
+    }
+    fun setWrongAnswers(value: Int) {
+        model.setWrongAnswers(value)
+    }
+
+    fun getCurrentStreak(): Int {
+        return model.getCurrentStreak()
+    }
+    fun setCurrentStreak(value: Int) {
+        model.setCurrentStreak(value)
+    }
+
+    fun getCurrentNote(): String {
+        return model.getCurrentNote()
+    }
+    fun setCurrentNote(note: String) {
+        model.setCurrentNote(note)
+        view.displayNote(model.getCurrentNote())
+    }
+
+    fun updateViewTexts() {
+        view.updateStreakText(model.getCurrentStreak())
+        view.updateWrongText(model.getWrongAnswers())
+        view.updateCorrectText(model.getCorrectAnswers())
+    }
+
+    fun setClefMode(mode: String) {
+        model.setClefMode(mode)
+    }
 }
+
