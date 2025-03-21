@@ -1,5 +1,20 @@
+/**
+ * This class is the settings-screen.
+ * There are 2 settings to choose from,
+ * Treble clef only -setting which will make
+ * it so that only treble clef notes are shown,
+ * and bass clef only -setting which does the same
+ * for bass notes.
+ *
+ * @author  Pontus Dahlkvist
+ * @date    21/03 -25
+ */
+
 package com.example.mobilou3
 
+/**
+ * --------------------- Imports ---------------------
+ */
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -7,6 +22,9 @@ import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 
+/**
+ * --------------------- Class SettingsActivity ---------------------
+ */
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var backButton: Button
@@ -16,6 +34,10 @@ class SettingsActivity : AppCompatActivity() {
     private var isBassClefOnly = false
     private lateinit var prefs: SharedPreferences
 
+    /**
+     * When activity is created. Will initialize everything
+     * and load the layout.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -27,6 +49,11 @@ class SettingsActivity : AppCompatActivity() {
         initBassClefOnlyButton()
     }
 
+    /**
+     * Initializes bass clef only button and sets it to false.
+     * Adds actionlistener to notice when the button is clicked.
+     * Will disable trebleClefOnlyButton when enabled.
+     */
     private fun initBassClefOnlyButton() {
         bassClefOnlyButton = findViewById(R.id.bassClefOnlyButton)
 
@@ -48,6 +75,11 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Initializes bass clef only button and sets it to false.
+     * Adds actionlistener to notice when the button is clicked.
+     * Will disable bassClefOnlyButton when enabled.
+     */
     private fun initTrebleClefOnlyButton() {
         trebleClefOnlyButton = findViewById(R.id.trebleClefOnlyButton)
         bassClefOnlyButton = findViewById(R.id.bassClefOnlyButton)
@@ -70,6 +102,12 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Updates the buttons looks so they
+     * match if they are selected or not.
+     * Also saves both buttons states to
+     * sharedPreferences.
+     */
     private fun updateButtonStates() {
         trebleClefOnlyButton.isSelected = isTrebleClefOnly
         bassClefOnlyButton.isSelected = isBassClefOnly
@@ -80,11 +118,16 @@ class SettingsActivity : AppCompatActivity() {
         editor.apply()
     }
 
-
+    /**
+     * Initializes back button and adds the
+     * actionlistener. Tackes the user back
+     * to the mainActivity.
+     */
     private fun initBackButton() {
         backButton = findViewById(R.id.backButton)
         backButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
         }
     }

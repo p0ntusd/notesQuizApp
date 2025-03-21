@@ -1,32 +1,65 @@
+/**
+ *  This is the model class for the
+ *  note quiz application. This class handles
+ *  most of the logic and heavy operations.
+ *
+ *  @author Pontus Dahlkvist
+ *  @date 21/03 -25
+ */
+
 package com.example.mobilou3
 
+/**
+ * ---------------- Imports ----------------
+ */
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.Log
 
-class Model(private var controller: Controller) : Parcelable {
+/**
+ * ----------------Class Model ----------------
+ */
+class Model(private var controller: Controller) {
 
     private lateinit var notesImages: HashMap<String, Int>
     private var currentNote: String = "C4_Treble"
     private var correctAnswers: Int = 0
     private var wrongAnswers: Int = 0
     private var currentStreak: Int = 0
-    private var trebleClefOnly: Boolean = false
     private var clefMode: String = "Both"
 
     init {
         initNotesImages()
     }
 
+    /**
+     * Returns current streak.
+     *
+     * @return  Current streak.
+     */
     fun getCurrentStreak(): Int {
         return currentStreak
     }
 
+    /**
+     * Sets the ClefMode-setting.
+     *
+     * @param mode  The new clef mode.
+     */
     fun setClefMode(mode: String) {
         clefMode = mode
     }
 
+    /**
+     * Returns a random note name. If Treble mode
+     * is active only treble notes will be returned.
+     * If bass mode it active only bass notes will be
+     * returned. If no mode is active both types of
+     * notes will be returned.
+     *
+     * Also sets whatever note is decided to the current note.
+     *
+     * @return  The name of the note that is decided.
+     */
     fun getRandomNoteImage(): String {
         val filteredNotes = when (clefMode) {
             "Treble" -> notesImages.keys.filter { it.contains("Treble") }
@@ -37,32 +70,69 @@ class Model(private var controller: Controller) : Parcelable {
         return currentNote
     }
 
+    /**
+     * Returns current number of correct answers.
+     *
+     * @return  Number of current correct answers.
+     */
     fun getCorrectAnswers(): Int {
         return correctAnswers
     }
 
+    /**
+     * Sets number of current correct answers.
+     *
+     * @param value New number.
+     */
     fun setCorrectAnswers(value: Int) {
         Log.d("GameState", "setCorrectAnswers() called with value: $value")
         correctAnswers = value
     }
 
+    /**
+     * Returns current number of incorrect answers.
+     *
+     * @return  Number of incorrect answers.
+     */
     fun getWrongAnswers():Int {
         return wrongAnswers
     }
 
+    /**
+     * Sets number of incorrect answers.
+     *
+     * @return  New number.
+     */
     fun setWrongAnswers(value: Int) {
         wrongAnswers = value
     }
 
+    /**
+     * Returns the current note.
+     *
+     * @return  The current note.
+     */
     fun getCurrentNote(): String {
-        Log.d("GameState", "getCorrectAnswers() returning: $correctAnswers")
         return currentNote
     }
+
+    /**
+     * Sets the current note.
+     *
+     * @param note  The name of the new note to be set.
+     */
     fun setCurrentNote(note: String) {
         currentNote = note
     }
 
-
+    /**
+     * Is called when the user has pushed a key.
+     * Depending on if the answer was correct or not,
+     * the corresponding method is called in controller
+     * and the score counters are adjusted.
+     *
+     * @param i The number for the key that is pressed.
+     */
     fun keyPressed(i: Int) {
         if (i == translateNoteToKey(currentNote)) {
             correctAnswers++
@@ -75,6 +145,20 @@ class Model(private var controller: Controller) : Parcelable {
         }
     }
 
+    /**
+     * At first I decided to save each key as a number,
+     * so here I need to translate each note into its
+     * corresponding key number. For example, key 0 is all the
+     * C-keys, and 2 is all the D keys.
+     *
+     * Some numbers are skipped, because in this version of the program
+     * the black keys are not yet implemented to work. There are no images
+     * to show for them because I forgot to make the sharps.
+     *
+     * @param note  The note to be translated.
+     *
+     * @return      The key number of the note. -1 if failed.
+     */
     fun translateNoteToKey(note: String): Int {
         if (note == "C2_Bass" || note == "C3_Bass" || note == "C4_Bass" ||
             note == "C4_Treble" || note == "C5_Treble" || note == "C6_Treble") {
@@ -108,6 +192,10 @@ class Model(private var controller: Controller) : Parcelable {
         return -1
     }
 
+    /**
+     * Initializes notesImages. It holds all
+     * the images of notes.
+     */
     private fun initNotesImages() {
         notesImages = hashMapOf(
             "C2_Bass" to R.drawable.c2bass,
@@ -146,33 +234,12 @@ class Model(private var controller: Controller) : Parcelable {
         )
     }
 
-    constructor(parcel: Parcel) : this(Controller()) {
-
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
+    /**
+     * Sets the current streak.
+     *
+     * @param value The number.
+     */
     fun setCurrentStreak(value: Int) {
         currentStreak = value
-    }
-
-    fun setTrebleClefOnly(enabled: Boolean) {
-        trebleClefOnly = enabled
-    }
-
-    companion object CREATOR : Parcelable.Creator<Model> {
-        override fun createFromParcel(parcel: Parcel): Model {
-            return Model(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Model?> {
-            return arrayOfNulls(size)
-        }
     }
 }

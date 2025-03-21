@@ -1,6 +1,8 @@
 /**
  * A note quiz application to assist the user
- * in learning to read sheet music.
+ * in learning to read sheet music. There
+ * are a settings activity and a stats activity
+ * together with the main activity, which is the game.
  *
  * It uses the model, view, controller
  * design pattern, and this MainActivity class
@@ -27,6 +29,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.mobou3.ControllerSingleton
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.content.Context
+import android.content.DialogInterface
+import androidx.appcompat.app.AlertDialog
+
 
 /**
  * -------------------- Class MainActivity --------------------
@@ -43,6 +53,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var wrongText: TextView
     private lateinit var streakText: TextView
 
+    private lateinit var sensorManager: SensorManager
+    private var accelerometer: Sensor? = null
+    private var sensorEventListener: SensorEventListener? = null
+    private var shakeThreshold = 12f
+
+    /**
+     * Is called when activity starts. Will initialize
+     * everything and restore a previous game state
+     * if one exists.
+     *
+     * @param savedInstanceState    Previously saved state.
+     */
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,17 +72,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         currentNoteImageView = findViewById(R.id.currentNodeImage)
+
         initTextViews()
         initButtons()
         initKeys()
         setKeysActionListeners()
         initNotesImages()
+        initShakeListener()
 
         controller.addView(this)
         controller.initModel()
 
-        loadGameState()
         loadSettings()
+        loadGameState()
+        controller.nextNote()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -69,6 +94,121 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Initializes the shake/movement sensor and sets
+     * a listener so that it detects when the phone is shook.
+     *
+     * Inspiration was taken from: https://stackoverflow.com/questions/2317428/how-to-refresh-app-upon-shaking-the-device
+     */
+    private fun initShakeListener() {
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+
+        sensorEventListener = object : SensorEventListener {
+            private var lastX = 0f
+            private var lastY = 0f
+            private var lastZ = 0f
+            private var lastUpdate: Long = 0
+
+            override fun onSensorChanged(event: SensorEvent) {
+                val currentTime = System.currentTimeMillis()
+                if ((currentTime - lastUpdate) > 100) {
+                    val diffTime = currentTime - lastUpdate
+                    lastUpdate = currentTime
+
+                    val x = event.values[0]
+                    val y = event.values[1]
+                    val z = event.values[2]
+
+                    val speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000
+
+                    if (speed > shakeThreshold) {
+                        showRestartDialog()
+                    }
+
+                    lastX = x
+                    lastY = y
+                    lastZ = z
+                }
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        }
+
+        sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_UI)
+    }
+
+    /**
+     * Opens a little window where the user
+     * can decide if they want to restart the
+     * score counting or not. It called upon when
+     * the user shakes their phones.
+     */
+    private fun showRestartDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Restart")
+        builder.setMessage("Restart score counter?")
+        builder.setPositiveButton("Yes") { _: DialogInterface, _: Int ->
+            restartGame()
+        }
+        builder.setNegativeButton("No", null)
+        builder.show()
+    }
+
+    /**
+     * Restarts the current game, resetting
+     * all the score counters to 0.
+     */
+    private fun restartGame() {
+        val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
+        val editor = prefs.edit()
+
+        editor.putInt("correctAnswers", 0)
+        editor.putInt("wrongAnswers", 0)
+        editor.putInt("currentStreak", 0)
+        editor.apply()
+
+        controller.setCorrectAnswers(0)
+        controller.setWrongAnswers(0)
+        controller.setCurrentStreak(0)
+        controller.updateViewTexts()
+        controller.nextNote()
+
+
+        val intent = intent
+        finish()
+        startActivity(intent)
+    }
+
+    /**
+     * Saves all the score values.
+     *
+     * @param correct   number of Correct
+     * @param wrong     number of incorrect
+     * @param streak    streak number
+     */
+    fun saveHighScores(correct: Int, wrong: Int, streak: Int) {
+        val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
+        val editor = prefs.edit()
+
+        if (correct > prefs.getInt("highScoreCorrect", 0)) {
+            editor.putInt("highScoreCorrect", correct)
+        }
+        if (wrong > prefs.getInt("highScoreWrong", 0)) {
+            editor.putInt("highScoreWrong", wrong)
+        }
+        if (streak > prefs.getInt("highScoreStreak", 0)) {
+            editor.putInt("highScoreStreak", streak)
+        }
+
+        editor.apply()
+    }
+
+
+    /**
+     * Loads the settings and sets the clef mode
+     * to whatever is saved.
+     */
     private fun loadSettings() {
         val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
         val isTrebleClefOnly = prefs.getBoolean("trebleClefOnly", false)
@@ -198,8 +338,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun initStatsButton() {
         statsButton = findViewById(R.id.statsButton)
-        statsButton.setOnClickListener{
-            //open stats
+        statsButton.setOnClickListener {
+            val intent = Intent(this, StatsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -255,8 +396,13 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadGameState()
+        controller.nextNote()
     }
 
+    /**
+     * Saves the state of the game scores when
+     * the activity is closed.
+     */
     private fun saveGameState() {
         val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
         val editor = prefs.edit()
@@ -269,6 +415,10 @@ class MainActivity : AppCompatActivity() {
         Log.d("GameState", "Game state saved: Correct=${controller.getCorrectAnswers()}, Wrong=${controller.getWrongAnswers()}, Streak=${controller.getCurrentStreak()}, Note=${controller.getCurrentNote()}")
     }
 
+    /**
+     * Loads the games previously saved state
+     * when this activity starts.
+     */
     private fun loadGameState() {
         val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
         controller.setCorrectAnswers(prefs.getInt("correctAnswers", 0))
@@ -284,19 +434,41 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Saves the game state when activity is paused.
+     */
     override fun onPause() {
         super.onPause()
         saveGameState()
+
+        if (sensorEventListener != null) {
+            sensorManager.unregisterListener(sensorEventListener)
+        }
     }
 
+    /**
+     * Updates the correct counter.
+     *
+     * @param   correctNumber   New correct number.
+     */
     fun updateCorrectText(correctNumber: Int) {
         correctText.setText("Correct: " + correctNumber)
     }
 
+    /**
+     * Updates the incorrect counter.
+     *
+     * @param wrongAnswers  New incorrect number.
+     */
     fun updateWrongText(wrongAnswers: Int) {
         wrongText.setText("Incorrect: " + wrongAnswers)
     }
 
+    /**
+     * Updates the streak counter.
+     *
+     * @param currentStreak New streak number.
+     */
     fun updateStreakText(currentStreak: Int) {
         streakText.setText("Streak: " + currentStreak)
     }
