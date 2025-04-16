@@ -12,7 +12,7 @@
  * @date    18/03 -25
  */
 
-package com.example.mobilou3
+package se.umu.dv23pdt.piano
 
 /**
  * -------------------- Imports --------------------
@@ -28,15 +28,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.mobou3.ControllerSingleton
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.content.Context
 import android.content.DialogInterface
+import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
-
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
  * -------------------- Class MainActivity --------------------
@@ -56,9 +56,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
     private var sensorEventListener: SensorEventListener? = null
-    private var shakeThreshold = 12f
+    private var shakeThreshold = 1000f
+    private val shakeCooldown = 3000L
+    private var lastShakeTime: Long = 0
+    private var isDialogUp = false
 
-    /**
+    /** 
      * Is called when activity starts. Will initialize
      * everything and restore a previous game state
      * if one exists.
@@ -69,7 +72,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_base)
+
+        val inflater = layoutInflater
+        val content = inflater.inflate(R.layout.activity_main, null)
+        findViewById<FrameLayout>(R.id.contentFrame).addView(content)
 
         currentNoteImageView = findViewById(R.id.currentNodeImage)
 
@@ -86,6 +93,10 @@ class MainActivity : AppCompatActivity() {
         loadSettings()
         loadGameState()
         controller.nextNote()
+
+        val navView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        setupBottomNav(navView, this)
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -112,6 +123,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSensorChanged(event: SensorEvent) {
                 val currentTime = System.currentTimeMillis()
+
                 if ((currentTime - lastUpdate) > 100) {
                     val diffTime = currentTime - lastUpdate
                     lastUpdate = currentTime
@@ -122,7 +134,9 @@ class MainActivity : AppCompatActivity() {
 
                     val speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000
 
-                    if (speed > shakeThreshold) {
+                    if (speed > shakeThreshold && currentTime - lastShakeTime > shakeCooldown && !isDialogUp) {
+                        lastShakeTime = currentTime
+                        isDialogUp = true
                         showRestartDialog()
                     }
 
@@ -132,7 +146,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+
+            }
         }
 
         sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_UI)
@@ -148,10 +164,20 @@ class MainActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Restart")
         builder.setMessage("Restart score counter?")
-        builder.setPositiveButton("Yes") { _: DialogInterface, _: Int ->
-            restartGame()
-        }
-        builder.setNegativeButton("No", null)
+
+        builder.setPositiveButton("Yes", object : DialogInterface.OnClickListener {
+            override fun onClick(dialog: DialogInterface?, which: Int) {
+                isDialogUp = false
+                restartGame()
+            }
+        })
+
+        builder.setNegativeButton("No", object : DialogInterface.OnClickListener {
+            override fun onClick(dialogInterface: DialogInterface?, which: Int) {
+                isDialogUp = false
+            }
+        })
+
         builder.show()
     }
 
@@ -181,7 +207,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Saves all the score values.
+     * Saves all the score values if one is
+     * exceeded.
      *
      * @param correct   number of Correct
      * @param wrong     number of incorrect

@@ -7,7 +7,7 @@
  * @date    19/03 -25
  */
 
-package com.example.mobilou3
+package se.umu.dv23pdt.piano
 
 /**
  * -------------------- Imports --------------------

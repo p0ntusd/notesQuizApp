@@ -6,9 +6,7 @@
  * @date    20/02 -25
  */
 
-package com.example.mobou3
-
-import com.example.mobilou3.Controller
+package se.umu.dv23pdt.piano
 
 /**
  * ViewModel to keep the same Controller

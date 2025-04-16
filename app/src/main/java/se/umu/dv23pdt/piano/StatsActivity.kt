@@ -11,17 +11,20 @@
  * @date    21/03 -25
  */
 
-package com.example.mobilou3
+package se.umu.dv23pdt.piano
 
 /**
  * ------------------------ Imports ------------------------
  */
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
  * ------------------------ Class StatsActivity ------------------------
@@ -41,9 +44,16 @@ class StatsActivity : AppCompatActivity() {
      *
      * @param savedInstanceState    Previously saved state.
      */
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_stats)
+        setContentView(R.layout.activity_base)
+        val navView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        setupBottomNav(navView, this)
+
+        val inflater = layoutInflater
+        val content = inflater.inflate(R.layout.activity_stats, null)
+        findViewById<FrameLayout>(R.id.contentFrame).addView(content)
 
         prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
 

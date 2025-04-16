@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mobilou3"
+    namespace = "se.umu.dv23pdt.piano"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.mobilou3"
+        applicationId = "se.umu.dv23pdt.piano"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -24,7 +24,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            applicationIdSuffix = "dv23pdt"
         }
     }
     compileOptions {

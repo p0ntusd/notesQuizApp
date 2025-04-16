@@ -10,7 +10,7 @@
  * @date    21/03 -25
  */
 
-package com.example.mobilou3
+package se.umu.dv23pdt.piano
 
 /**
  * --------------------- Imports ---------------------
@@ -19,8 +19,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
  * --------------------- Class SettingsActivity ---------------------
@@ -40,7 +42,13 @@ class SettingsActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        setContentView(R.layout.activity_base)
+        val navView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        setupBottomNav(navView, this)
+
+        val inflater = layoutInflater
+        val content = inflater.inflate(R.layout.activity_settings, null)
+        findViewById<FrameLayout>(R.id.contentFrame).addView(content)
 
         prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
 

@@ -1,0 +1,52 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class MainActivity {
+  +onCreate()
+  +displayNote(key: String)
+  +updateCorrectText(correct: Int)
+  +updateWrongText(wrong: Int)
+  +updateStreakText(streak: Int)
+  +saveHighScores(correct, wrong, streak)
+  +loadSettings()
+  +loadGameState()
+  +saveGameState()
+}
+
+class Controller {
+  +addView(view: MainActivity)
+  +initModel()
+  +keyPressed(i: Int)
+  +answeredCorrect(correct: Int)
+  +answeredWrong(wrong: Int)
+  +setClefMode(mode: String)
+}
+
+class Model {
+  +getRandomNoteImage(): String
+  +translateNoteToKey(note: String): Int
+  +keyPressed(i: Int)
+  +setClefMode(mode: String)
+  +setCorrectAnswers(value: Int)
+  +setWrongAnswers(value: Int)
+}
+
+class StatsActivity {
+  +onCreate()
+}
+
+class SettingsActivity {
+  +onCreate()
+}
+
+class ControllerSingleton {
+  +controller: Controller
+}
+
+MainActivity --> Controller : uses
+Controller --> Model : uses
+Model --> Controller : callback
+ControllerSingleton --> Controller : has
+MainActivity --> StatsActivity : starts
+MainActivity --> SettingsActivity : starts
+@enduml

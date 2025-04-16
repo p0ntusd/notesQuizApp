@@ -7,12 +7,11 @@
  *  @date 21/03 -25
  */
 
-package com.example.mobilou3
+package se.umu.dv23pdt.piano
 
 /**
  * ---------------- Imports ----------------
  */
-import android.os.Bundle
 import android.util.Log
 
 /**
